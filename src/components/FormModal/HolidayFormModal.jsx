@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,10 +19,31 @@ export default function HolidayFormModal({
     handleSubmit,
     control,
     reset,
+    clearErrors,
+
     formState: { isSubmitting },
   } = useForm({
     defaultValues: defaultValues || { date: "", title: "", type: "" },
   });
+
+  useEffect(() => {
+    if (defaultValues) {
+      const mappedValues = {
+        ...defaultValues,
+        employee: String(defaultValues.empNo), // 👈 important change
+      };
+      reset(mappedValues);
+    } else {
+      // 👇 ye line add karo: jab new add kare to form clean ho jaye
+      reset({
+        date: "",
+        employee: "",
+        reason: "",
+        workMode: "Remote",
+      });
+    }
+    clearErrors();
+  }, [defaultValues, reset, clearErrors]);
 
   const handleFormSubmit = async (data) => {
     try {
@@ -48,11 +70,7 @@ export default function HolidayFormModal({
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Saving..."
-                : defaultValues
-                ? "Update"
-                : "Create"}
+              {isSubmitting ? "Saving..." : defaultValues ? "Update" : "Create"}
             </Button>
           </div>
         </form>

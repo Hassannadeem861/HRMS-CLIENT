@@ -32,28 +32,35 @@ export default function FormModal({ isOpen, onClose, onSubmit, initialData }) {
     },
   });
 
-  useEffect(() => {
-    if (initialData) {
-      reset({
-        ...initialData,
-        status: initialData?.status === 1 ? "1" : "0",
-      });
-    } else {
-      reset({
-        empNo: "",
-        name: "",
-        email: "",
-        mobile_number: "",
-        designation: "",
-        account_number: "",
-        permanent_address: "",
-        salary: "",
-        date_of_birth: "",
-        date_of_joining: "",
-        status: "1",
-      });
-    }
-  }, [initialData, reset]);
+ useEffect(() => {
+  if (initialData) {
+    reset({
+      ...initialData,
+      status: initialData?.status === 1 ? "1" : "0",
+      date_of_birth: initialData.date_of_birth
+        ? initialData.date_of_birth.split("T")[0]
+        : "",
+      date_of_joining: initialData.date_of_joining
+        ? initialData.date_of_joining.split("T")[0]
+        : "",
+    });
+  } else {
+    reset({
+      empNo: "",
+      name: "",
+      email: "",
+      mobile_number: "",
+      designation: "",
+      account_number: "",
+      permanent_address: "",
+      salary: "",
+      date_of_birth: "",
+      date_of_joining: "",
+      status: "1",
+    });
+  }
+}, [initialData, reset]);
+
 
   // const handleFormSubmit = async (data) => {
 
@@ -135,7 +142,7 @@ export default function FormModal({ isOpen, onClose, onSubmit, initialData }) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <FormFields control={control} />
+          <FormFields control={control} initialData={initialData} />
           <div className="flex justify-end space-x-2">
             <Button
               type="button"

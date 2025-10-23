@@ -1,4 +1,4 @@
-// src/components/FormModal/FormFields.jsx
+import React from "react";
 import { Controller } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -11,8 +11,20 @@ import {
   SelectItem,
 } from "../ui/select";
 import { cn } from "@/lib/utils";
+import {
+  bufferToBase64,
+  openPdfFromBuffer,
+} from "../../helper_functions/all-helper-functions";
 
-export default function FormFields({ control }) {
+export default function FormFields({ control, initialData }) {
+  // ✅ Convert buffers to previewable URLs
+  const imageUrl = initialData?.fileUpload
+    ? bufferToBase64(initialData.fileUpload)
+    : null;
+
+  const pdfBuffer = initialData?.pdfUpload;
+  const pdfUrl = pdfBuffer ? bufferToBase64(pdfBuffer, "application/pdf") : null;
+
   return (
     <div className="grid gap-4 py-4">
       {/* Employee Number */}
@@ -213,7 +225,7 @@ export default function FormFields({ control }) {
         />
       </div>
 
-      {/* Address (Permanent Address) */}
+      {/* Permanent Address */}
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="permanent_address" className="text-right">
           Permanent Address
@@ -235,7 +247,37 @@ export default function FormFields({ control }) {
         />
       </div>
 
-      {/* File Upload */}
+      {/* PDF Upload */}
+      <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="pdfUpload" className="text-right">
+          Upload PDF
+        </Label>
+        <Controller
+          name="pdfUpload"
+          control={control}
+          render={({ field }) => (
+            <div className="col-span-3 space-y-2">
+              <Input
+                type="file"
+                accept="application/pdf"
+                id="pdfUpload"
+                onChange={(e) => field.onChange(e.target.files[0])}
+              />
+              {pdfUrl && (
+                <button
+                  type="button"
+                  onClick={() => openPdfFromBuffer(pdfBuffer)}
+                  className="text-blue-600 underline text-sm"
+                >
+                  View existing PDF
+                </button>
+              )}
+            </div>
+          )}
+        />
+      </div>
+
+      {/* File Upload (Image) */}
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="fileUpload" className="text-right">
           Upload File
@@ -243,48 +285,21 @@ export default function FormFields({ control }) {
         <Controller
           name="fileUpload"
           control={control}
-          // rules={{ required: "File is required" }}
-          render={({ field, fieldState }) => (
-            <div className="col-span-3">
+          render={({ field }) => (
+            <div className="col-span-3 space-y-2">
               <Input
                 type="file"
                 id="fileUpload"
+                accept="image/*"
                 onChange={(e) => field.onChange(e.target.files[0])}
-                className={cn(fieldState.error && "border-red-500")}
               />
-              {/* {fieldState.error && (
-                <p className="text-sm text-red-500 mt-1">
-                  {fieldState.error.message}
-                </p>
-              )} */}
-            </div>
-          )}
-        />
-      </div>
-
-      {/* PDF Upload */}
-      <div className="grid grid-cols-4 items-center gap-4 mt-4">
-        <Label htmlFor="pdfUpload" className="text-right">
-          Upload PDF
-        </Label>
-        <Controller
-          name="pdfUpload"
-          control={control}
-          // rules={{ required: "PDF is required" }}
-          render={({ field, fieldState }) => (
-            <div className="col-span-3">
-              <Input
-                type="file"
-                accept="application/pdf"
-                id="pdfUpload"
-                onChange={(e) => field.onChange(e.target.files[0])}
-                className={cn(fieldState.error && "border-red-500")}
-              />
-              {/* {fieldState.error && (
-                <p className="text-sm text-red-500 mt-1">
-                  {fieldState.error.message}
-                </p>
-              )} */}
+              {imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt="preview"
+                  className="w-20 h-20 rounded border object-cover"
+                />
+              )}
             </div>
           )}
         />

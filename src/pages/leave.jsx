@@ -9,12 +9,14 @@ import {
 } from "../utils/leave-api.js";
 import LeaveDataTable from "../components/DataTable/LeaveDataTable.jsx";
 import LeaveFormModal from "../components/FormModal/LeaveFromModel.jsx";
+import { getAllEmployers } from "../utils/client-api.js";
 
 const Leave = () => {
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editItem, setEditItem] = useState(null);
+  const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
     loadItems();
@@ -23,8 +25,13 @@ const Leave = () => {
   const loadItems = async () => {
     setIsLoading(true);
     try {
-      const data = await getAllLeaves();
-      setItems(data?.leaves || []);
+      // const data = await getAllLeaves();
+      const [leaveRes, empRes] = await Promise.all([
+        getAllLeaves(),
+        getAllEmployers(),
+      ]);
+      setItems(leaveRes?.leaves || []);
+      setEmployees(empRes?.users || []);
     } catch (error) {
       console.error("Error loading leaves:", error.message);
     } finally {
@@ -72,6 +79,7 @@ const Leave = () => {
 
       <LeaveDataTable
         data={items}
+        employees={employees}
         loading={isLoading}
         onEdit={(item) => {
           setEditItem(item);

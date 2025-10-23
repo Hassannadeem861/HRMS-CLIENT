@@ -15,13 +15,13 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { toast } from "react-hot-toast";
 import logo from "../../assets/eb-technology.png";
+import Loader from "../loader.jsx";
 // ✅ Correct way to register fonts
 pdfMake.vfs = pdfFonts.vfs;
 
-export default function DataTable({ data = [], loading }) {
-  console.log("data: ", data);
-
+export default function DataTable({ data = [] }) {
   const [slip, setSlip] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const getBase64ImageFromURL = async (url) => {
     const res = await fetch(url);
@@ -244,6 +244,7 @@ export default function DataTable({ data = [], loading }) {
 
   const handleDownload = async (item) => {
     try {
+      setLoading(true);
       // Step 1: Get salary slip details
       const res = await Api.get(`/api/v1/get-single-salary-slip/${item._id}`);
       const slipData = res?.data?.salarySlip;
@@ -276,6 +277,7 @@ export default function DataTable({ data = [], loading }) {
       const lateDates = groupByStatus("Late");
       const absentDates = groupByStatus("Absent");
       const leaveDates = groupByStatus("Leave");
+      const remoteDates = groupByStatus("Remote");
 
       // Step 4: Generate PDF
       const logoBase64 = await getBase64ImageFromURL(logo);
@@ -356,6 +358,10 @@ export default function DataTable({ data = [], loading }) {
                   "Late Deduction",
                   `Rs.${attendanceSummary.lateDeduction || 0}`,
                 ],
+                [
+                  "Loan Deduction",
+                  `Rs.${attendanceSummary.totalLoanDeduction || 0}`,
+                ],
               ],
             },
             layout: {
@@ -379,6 +385,7 @@ export default function DataTable({ data = [], loading }) {
                 ["Late", lateDates.length ? lateDates.join(", ") : "—"],
                 ["Absent", absentDates.length ? absentDates.join(", ") : "—"],
                 ["Leaves", leaveDates.length ? leaveDates.join(", ") : "—"],
+                ["Remotes", remoteDates.length ? remoteDates.join(", ") : "—"],
               ],
             },
             layout: {
@@ -388,8 +395,15 @@ export default function DataTable({ data = [], loading }) {
             },
           },
 
+          // {
+          //   text: `Net Salary Payable: Rs.${attendanceSummary.netSalary || 0}`,
+          //   style: "sectionHeader",
+          //   margin: [0, 20, 0, 20],
+          // },
           {
-            text: `Net Salary Payable: Rs.${attendanceSummary.netSalary || 0}`,
+            text: `Net Salary Payable: Rs.${
+              attendanceSummary.finalSalary || 0
+            }`,
             style: "sectionHeader",
             margin: [0, 20, 0, 20],
           },
@@ -410,13 +424,26 @@ export default function DataTable({ data = [], loading }) {
 
       toast.success("✅ PDF downloaded successfully!");
     } catch (err) {
-      console.error("Download error:", err);
+      console.error("Download error:", err.message);
       toast.error("❌ Failed to download PDF!");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // if (loading) {
+  //   return <Loader/>
+  // }
+
   return (
     <div className="rounded-md border">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
+          <Loader />
+          <p className="text-sm text-gray-600 mt-2">Generating PDF...</p>
+        </div>
+      )}
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -429,11 +456,11 @@ export default function DataTable({ data = [], loading }) {
         </TableHeader>
 
         <TableBody>
-          {loading
+          {loading || !data.length
             ? Array(5)
                 .fill(0)
                 .map((_, index) => (
-                  <TableRow key={index}>
+                  <TableRow key={`skeleton-${index}`}>
                     {[...Array(4)].map((__, i) => (
                       <TableCell key={i}>
                         <Skeleton className="h-4 w-[100px]" />
@@ -449,10 +476,15 @@ export default function DataTable({ data = [], loading }) {
                   <TableCell>{item?.month}</TableCell>
                   <TableCell>
                     <button
+                      disabled={loading}
                       onClick={() => handleDownload(item)}
-                      className="bg-black text-white px-2 py-1 text-sm rounded hover:bg-gray-800"
+                      className={`px-2 py-1 text-sm rounded text-white ${
+                        loading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-black hover:bg-gray-800"
+                      }`}
                     >
-                      Download PDF
+                      {loading ? "Downloading..." : "Download PDF"}
                     </button>
                   </TableCell>
                 </TableRow>

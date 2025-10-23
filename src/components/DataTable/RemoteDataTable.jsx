@@ -10,14 +10,26 @@ import { Skeleton } from "../ui/skeleton";
 import TableActions from "./TableActions";
 import { formatDateOnly } from "../../helper_functions/all-helper-functions.js";
 
-export default function RemoteDataTable({ data, loading, onEdit, onDelete }) {
+export default function RemoteDataTable({
+  employees,
+  data,
+  loading,
+  onEdit,
+  onDelete,
+}) {
+  // 👇 employee number se name find karne ka helper
+  const getEmployeeName = (empNo) => {
+    const found = employees?.find((emp) => String(emp.empNo) === String(empNo));
+    return found ? found.name : "N/A";
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead>Employee_Number</TableHead>
+            <TableHead>Employee Name</TableHead>
             <TableHead>Reason</TableHead>
             <TableHead>Work Mode</TableHead>
             <TableHead>Actions</TableHead>
@@ -43,7 +55,8 @@ export default function RemoteDataTable({ data, loading, onEdit, onDelete }) {
             data.map((item) => (
               <TableRow key={item._id}>
                 <TableCell>{formatDateOnly(item?.date) || "N/A"}</TableCell>
-                <TableCell>{item?.empNo || "N/A"}</TableCell>
+                <TableCell>{getEmployeeName(item?.empNo)}</TableCell> {/* 👈 name shown */}
+                {/* <TableCell>{item?.empNo || "N/A"}</TableCell> */}
                 <TableCell>{item?.reason || "N/A"}</TableCell>
                 <TableCell>{item?.workMode || "N/A"}</TableCell>
                 <TableCell>

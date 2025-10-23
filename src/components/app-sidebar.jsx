@@ -12,7 +12,8 @@ import {
   IconCalendarTime,
   IconUsersGroup ,
   IconBriefcase ,
-  IconIdBadge2 
+  IconIdBadge2 ,
+  // IconLoan 
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "@/components/nav-documents";
@@ -31,58 +32,63 @@ import {
 
 const data = {
   user: {
-    name: "hassan",
-    email: "hassan@gmail.com",
+    name: "Admin",
+    email: "admin@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
-      title: "Working-Associated",
+      title: "EMPLOYEES",
       url: "/working-associated",
       icon: IconBriefcase,
     },
     {
-      title: "Manage-Time",
+      title: "MANAGE-TIME",
       url: "/manage-time",
       icon: IconCalendarTime,
     },
     {
-      title: "Salary-Slip",
+      title: "LOAN",
+      url: "/loan",
+      icon: IconCalendarTime,
+    },
+    {
+      title: "SALARY-SLIP",
       url: "/salary-slip",
       icon: IconCurrencyDollar,
     },
     {
-      title: "Attendence",
+      title: "ATTENDENCE",
       url: "/attendence",
       icon: IconClock,
     },
     {
-      title: "Holiday",
+      title: "HOLIDAY",
       url: "/holiday",
       icon: IconBeach,
     },
     {
-      title: "Leave",
+      title: "LEAVE",
       url: "/leave",
       icon: IconCalendarMinus,
     },
     {
-      title: "Remote",
+      title: "REMOTE",
       url: "/remote",
       icon: IconDeviceLaptop,
     },
     {
-      title: "Project-Award",
+      title: "PROJECT-AWARD",
       url: "/project-award",
       icon: IconTrophy,
     },
     {
-      title: "Expence",
+      title: "EXPENCE",
       url: "/expence",
       icon: IconReceipt2,
     },
     {
-      title: "Revenue",
+      title: "REVENUE",
       url: "/revenue",
       icon: IconChartBar,
     },
