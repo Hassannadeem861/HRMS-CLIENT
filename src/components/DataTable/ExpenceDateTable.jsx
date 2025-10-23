@@ -50,7 +50,6 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
               ))
           ) : data?.length > 0 ? (
             data.map((item) => {
-              // console.log("item: ", item);
 
               return (
                 <TableRow key={item._id}>

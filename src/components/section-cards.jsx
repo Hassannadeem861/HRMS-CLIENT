@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { getAllProjects } from "../utils/project-award-api.js";
 export function SectionCards({ projects }) {
-  console.log(" projects: ", projects);
   
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

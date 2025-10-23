@@ -60,6 +60,46 @@ export default function RemoteFormFields({ control }) {
           name="employee"
           control={control}
           rules={{ required: "Employee is required" }}
+          render={({ field, fieldState }) => (
+            <div className="col-span-3">
+              <select
+                {...field}
+                value={field.value || ""}
+                className="border rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Employee</option>
+                {employees.length > 0 ? (
+                  employees.map((emp) => (
+                    <option key={emp.empNo} value={String(emp.empNo)}>
+                      {emp.name} (#{emp.empNo})
+                    </option>
+                  ))
+                ) : (
+                  <option value="no-employee" disabled>
+                    No employees found
+                  </option>
+                )}
+              </select>
+
+              {/* 👇 ye add karo: error message show karega */}
+              {fieldState.error && (
+                <p className="text-sm text-red-500 mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+      </div>
+
+      {/* <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="employee" className="text-right">
+          Employee
+        </Label>
+        <Controller
+          name="employee"
+          control={control}
+          rules={{ required: "Employee is required" }}
           render={({ field }) => (
             <div className="col-span-3">
               <Select onValueChange={field.onChange} value={field.value}>
@@ -83,7 +123,7 @@ export default function RemoteFormFields({ control }) {
             </div>
           )}
         />
-      </div>
+      </div> */}
 
       {/* Reason */}
       <div className="grid grid-cols-4 items-center gap-4">
@@ -117,6 +157,29 @@ export default function RemoteFormFields({ control }) {
           control={control}
           render={({ field }) => (
             <div className="col-span-3">
+              <select
+                {...field}
+                className="border rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Work Mode</option>
+                <option value="Office">Office</option>
+                <option value="Remote">Remote</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+          )}
+        />
+      </div>
+
+      {/* <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="workMode" className="text-right">
+          Work Mode
+        </Label>
+        <Controller
+          name="workMode"
+          control={control}
+          render={({ field }) => (
+            <div className="col-span-3">
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Work Mode" />
@@ -130,7 +193,7 @@ export default function RemoteFormFields({ control }) {
             </div>
           )}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

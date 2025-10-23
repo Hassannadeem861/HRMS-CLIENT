@@ -42,3 +42,26 @@ export const formatTimeOnly = (isoDateString) => {
     hour12: true, // 👉 agar "01:05 PM" chahiye
   });
 };
+
+export const bufferToBase64 = (buffer, type = "image/png") => {
+  if (!buffer || !buffer.data) return "";
+  const base64 = btoa(
+    new Uint8Array(buffer.data).reduce(
+      (data, byte) => data + String.fromCharCode(byte),
+      ""
+    )
+  );
+  return `data:${type};base64,${base64}`;
+};
+
+export const openPdfFromBuffer = (buffer) => {
+  if (!buffer || !buffer.data) return;
+  const byteArray = new Uint8Array(buffer.data);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank");
+};
+
+
+
+

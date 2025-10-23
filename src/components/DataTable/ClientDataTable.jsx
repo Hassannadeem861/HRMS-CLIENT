@@ -15,6 +15,8 @@ import {
   formatMobileNumber,
   formatPKRS,
   formatDateOnly,
+bufferToBase64,
+openPdfFromBuffer 
 } from "../../helper_functions/all-helper-functions.js";
 import { Button } from "../ui/button.jsx";
 import { Card, CardContent } from "../ui/card.jsx";
@@ -59,8 +61,6 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
               ))
           ) : data?.length > 0 ? (
             data.map((item) => {
-              // console.log("item: ", item);
-
               return (
                 <TableRow key={item._id}>
                   <TableCell>{item?.empNo || "N/A"}</TableCell>
@@ -73,7 +73,7 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
                   <TableCell>{item?.account_number || "N/A"}</TableCell>
                   <TableCell>{item?.permanent_address || "N/A"}</TableCell>
 
-                  <TableCell>
+                   <TableCell>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
@@ -83,28 +83,30 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
 
                       <DialogContent className="max-w-md p-4">
                         <img
-                          src={`http://localhost:8081/uploads/${item.fileUpload}`}
+                          src={bufferToBase64(item.fileUpload, "image/png")}
                           alt="Preview"
                           className="w-full h-auto rounded-lg object-contain"
                         />
                       </DialogContent>
                     </Dialog> 
-                  </TableCell>
+                  </TableCell> 
 
-                  <TableCell>
-                    <a
-                      href={`http://localhost:8081/uploads/${item.pdfUpload}`}
+                   <TableCell>
+                    {/* <a
+                      // href={bufferToBase64(item.pdfUpload, "application/pdf")}
                       target="_blank"
                       rel="noopener noreferrer"
-                    >
+                    > */}
                       <Button
                         variant="outline"
+                          onClick={() => openPdfFromBuffer(item.pdfUpload)}
+
                         className="text-sm bg-[#8B8B8B] text-white border-white-800 hover:bg-blue-50"
                       >
                         View PDF
                       </Button>
-                    </a>
-                  </TableCell>
+                    {/* </a> */}
+                  </TableCell> 
 
                   <TableCell>{formatPKRS(item?.salary) || "N/A"}</TableCell>
                   <TableCell>

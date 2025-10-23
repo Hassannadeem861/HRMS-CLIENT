@@ -9,12 +9,14 @@ import {
 } from "../utils/remote-api.js";
 import RemoteDataTable from "../components/DataTable/RemoteDataTable.jsx";
 import RemoteFormModal from "../components/FormModal/RemoteFormModal.jsx";
+import { getAllEmployers } from "../utils/client-api.js";
 
 const Remote = () => {
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editItem, setEditItem] = useState(null);
+  const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
     loadItems();
@@ -23,8 +25,13 @@ const Remote = () => {
   const loadItems = async () => {
     setIsLoading(true);
     try {
-      const data = await getAllRemotes();
-      setItems(data?.remote || []); // ✅ match backend response key
+      // const data = await getAllRemotes();
+      const [remoteRes, empRes] = await Promise.all([
+        getAllRemotes(),
+        getAllEmployers(),
+      ]);
+      setItems(remoteRes?.remote || []);
+      setEmployees(empRes?.users || []);
     } catch (error) {
       console.error("Error loading remotes:", error.message);
     } finally {
@@ -72,6 +79,7 @@ const Remote = () => {
 
       <RemoteDataTable
         data={items}
+        employees={employees} 
         loading={isLoading}
         onEdit={(item) => {
           setEditItem(item);

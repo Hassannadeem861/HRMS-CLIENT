@@ -16,29 +16,55 @@ import {
 import { Button } from "../ui/button.jsx";
 import { Input } from "../ui/input.jsx";
 import { Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function DataTable({ data, loading, onEdit, onDelete }) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("all"); // ✅ month filter state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const handleView = (empNo) => {
-    if (!empNo) return;
-    window.location.href = `/get-single-attendence?empNo=${empNo}`;
+  const handleView = (item) => {
+    const dateObj = new Date(item.date);
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    if (!item) return;
+    navigate(
+      `/get-single-attendence?empNo=${item.empNo}&month=${month}&year=${year}`
+    );
   };
 
-  // 🔹 Filter Data by Name (case-insensitive)
+  // 🔹 Apply both search and month filter
   const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    return data?.filter((item) =>
-      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [data, searchTerm]);
+    let temp = data;
 
-  // 🔹 Pagination calculations
+    // Month Filter
+    if (selectedMonth !== "all") {
+      temp = temp.filter((item) => {
+        const itemMonth = new Date(item.date).getMonth() + 1;
+        return itemMonth === parseInt(selectedMonth);
+      });
+    }
+
+    // Name Search
+    if (searchTerm) {
+      temp = temp.filter((item) =>
+        item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return temp;
+  }, [data, searchTerm, selectedMonth]);
+
+  // Pagination logic
   const totalPages = Math.ceil((filteredData?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = filteredData?.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = filteredData?.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
   const handleNext = () =>
@@ -46,16 +72,40 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
 
   return (
     <div className="rounded-md border bg-white">
-      {/* 🔍 Search Bar */}
-      <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-        <h2 className="text-lg font-semibold">Attendance Records</h2>
+      {/* 🔍 Search Bar + Month Filter */}
+      <div className="flex flex-wrap justify-between items-center gap-3 p-4 border-b bg-gray-50">
+        {/* Month Filter */}
+        <div className="flex items-center gap-2">
+          <label className="font-medium text-sm text-gray-600">Month:</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="border rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+
+        {/* Search Input */}
         <Input
           type="text"
           placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); // reset page on search
+            setCurrentPage(1);
           }}
           className="w-64"
         />
@@ -111,7 +161,7 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handleView(item.empNo)}
+                    onClick={() => handleView(item)}
                     title="View Single Attendance"
                   >
                     <Eye className="h-4 w-4 text-blue-600" />
@@ -126,14 +176,14 @@ export default function DataTable({ data, loading, onEdit, onDelete }) {
           ) : (
             <TableRow>
               <TableCell colSpan={9} className="text-center py-4">
-                No items found
+                No records found
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      {/* ✅ Pagination Controls */}
+      {/* ✅ Pagination */}
       {!loading && totalPages > 1 && (
         <div className="flex justify-between items-center p-4 border-t bg-gray-50">
           <Button

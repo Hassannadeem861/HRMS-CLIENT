@@ -52,7 +52,47 @@ export default function LeaveFormFields({ control }) {
       </div>
 
       {/* Employee */}
+
       <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="employee" className="text-right">
+          Employee
+        </Label>
+        <Controller
+          name="employee"
+          control={control}
+          rules={{ required: "Employee is required" }}
+          render={({ field, fieldState }) => (
+            <div className="col-span-3">
+              <select
+                {...field}
+                value={field.value || ""}
+                className="border rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Employee</option>
+                {employees.length > 0 ? (
+                  employees.map((emp) => (
+                    <option key={emp.empNo} value={String(emp.empNo)}>
+                      {emp.name} (#{emp.empNo})
+                    </option>
+                  ))
+                ) : (
+                  <option value="no-employee" disabled>
+                    No employees found
+                  </option>
+                )}
+              </select>
+              {/* 👇 ye add karo: error message show karega */}
+              {fieldState.error && (
+                <p className="text-sm text-red-500 mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+      </div>
+
+      {/* <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="employee" className="text-right">
           Employee
         </Label>
@@ -83,7 +123,7 @@ export default function LeaveFormFields({ control }) {
             </div>
           )}
         />
-      </div>
+      </div> */}
 
       {/* Reason */}
       <div className="grid grid-cols-4 items-center gap-4">
@@ -97,18 +137,44 @@ export default function LeaveFormFields({ control }) {
           render={({ field, fieldState }) => (
             <div className="col-span-3">
               <Textarea id="reason" placeholder="Enter reason" {...field} />
-              {fieldState.error && (
+              {/* {fieldState.error && (
                 <p className="text-sm text-red-500 mt-1">
                   {fieldState.error.message}
                 </p>
-              )}
+              )} */}
             </div>
           )}
         />
       </div>
 
       {/* Type */}
+
       <div className="grid grid-cols-4 items-center gap-4">
+        <Label htmlFor="type" className="text-right">
+          Type
+        </Label>
+        <Controller
+          name="type"
+          control={control}
+          render={({ field }) => (
+            <div className="col-span-3">
+              <select
+                {...field}
+                className="border rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Type</option>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Sick">Sick</option>
+                <option value="Casual">Casual</option>
+                <option value="HalfDay">Half Day</option>
+              </select>
+            </div>
+          )}
+        />
+      </div>
+
+      {/* <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="type" className="text-right">
           Type
         </Label>
@@ -132,7 +198,7 @@ export default function LeaveFormFields({ control }) {
             </div>
           )}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

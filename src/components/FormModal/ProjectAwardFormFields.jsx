@@ -20,7 +20,6 @@ export default function FormFields({ control }) {
     setIsLoading(true);
     try {
       const data = await getAllProjects();
-      // console.log("Get all projects: ", data?.projects);
 
       const allStacks = [];
       const allNiches = [];

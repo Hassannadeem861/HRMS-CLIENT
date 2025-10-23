@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,8 @@ export default function LeaveFormModal({
     handleSubmit,
     control,
     reset,
+    clearErrors,
+
     formState: { isSubmitting },
   } = useForm({
     defaultValues: defaultValues || {
@@ -26,7 +29,27 @@ export default function LeaveFormModal({
       reason: "",
       type: "",
     },
+    mode: "onChange",
   });
+
+  useEffect(() => {
+    if (defaultValues) {
+      const mappedValues = {
+        ...defaultValues,
+        employee: String(defaultValues.empNo), // 👈 important change
+      };
+      reset(mappedValues);
+    } else {
+      // 👇 ye line add karo: jab new add kare to form clean ho jaye
+      reset({
+        date: "",
+        employee: "",
+        reason: "",
+        workMode: "Remote",
+      });
+    }
+    clearErrors();
+  }, [defaultValues, reset, clearErrors]);
 
   const handleFormSubmit = async (data) => {
     const payload = {

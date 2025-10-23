@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ export default function RemoteFormModal({
     handleSubmit,
     control,
     reset,
+    clearErrors,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: defaultValues || {
@@ -26,7 +28,27 @@ export default function RemoteFormModal({
       reason: "",
       workMode: "Remote",
     },
+    mode: "onChange",
   });
+
+  useEffect(() => {
+    if (defaultValues) {
+      const mappedValues = {
+        ...defaultValues,
+        employee: String(defaultValues.empNo), // 👈 important change
+      };
+      reset(mappedValues);
+    } else {
+      // 👇 ye line add karo: jab new add kare to form clean ho jaye
+      reset({
+        date: "",
+        employee: "",
+        reason: "",
+        workMode: "Remote",
+      });
+    }
+    clearErrors();
+  }, [defaultValues, reset, clearErrors]);
 
   const handleFormSubmit = async (data) => {
     const payload = {
@@ -47,7 +69,9 @@ export default function RemoteFormModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{defaultValues ? "Edit Remote" : "Add Remote"}</DialogTitle>
+          <DialogTitle>
+            {defaultValues ? "Edit Remote" : "Add Remote"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
